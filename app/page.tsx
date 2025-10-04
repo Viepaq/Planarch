@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [activeImage, setActiveImage] = useState(0);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [projectsVisible, setProjectsVisible] = useState(false);
   const [aboutVisible, setAboutVisible] = useState(false);
   const [servicesVisible, setServicesVisible] = useState(false);
@@ -22,16 +23,20 @@ export default function Home() {
         top: middle,
         behavior: "smooth"
       });
+      setMobileMenuOpen(false);
     }
   };
 
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 50);
+      if (mobileMenuOpen) {
+        setMobileMenuOpen(false);
+      }
     };
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [mobileMenuOpen]);
 
   useEffect(() => {
     const observerOptions = {
@@ -126,16 +131,18 @@ export default function Home() {
         {/* Navigation */}
         <nav
           className={`fixed top-0 w-full z-50 transition-all duration-500 ease-out ${
-            scrolled ? "bg-black/30 backdrop-blur-sm shadow-lg shadow-black/20" : ""
+            scrolled || mobileMenuOpen ? "bg-black/30 backdrop-blur-sm shadow-lg shadow-black/20" : ""
           }`}
         >
-          <div className={`w-full px-8 flex justify-between items-center transition-all duration-500 ${
-            scrolled ? "py-4" : "py-6"
+          <div className={`w-full px-6 md:px-8 flex justify-between items-center transition-all duration-500 ${
+            scrolled ? "py-3 md:py-4" : "py-4 md:py-6"
           }`}>
-            <h1 className="text-2xl font-light tracking-[0.3em] text-white">
+            <h1 className="text-xl md:text-2xl font-light tracking-[0.3em] text-white">
               PLANARCH
             </h1>
-            <div className="flex items-center gap-10">
+            
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center gap-10">
               <a
                 href="#projects"
                 onClick={(e) => scrollToCenter(e, "projects")}
@@ -165,20 +172,67 @@ export default function Home() {
                 KONTAKT
               </a>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              className="md:hidden flex flex-col gap-1.5 w-6 h-6 justify-center items-center"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label="Toggle menu"
+            >
+              <span className={`w-full h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`}></span>
+              <span className={`w-full h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? 'opacity-0' : ''}`}></span>
+              <span className={`w-full h-0.5 bg-white transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`}></span>
+            </button>
+          </div>
+
+          {/* Mobile Menu Dropdown */}
+          <div className={`md:hidden overflow-hidden transition-all duration-300 ease-in-out ${
+            mobileMenuOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}>
+            <div className="px-6 py-4 space-y-4 bg-black/40 backdrop-blur-md border-t border-white/10">
+              <a
+                href="#projects"
+                onClick={(e) => scrollToCenter(e, "projects")}
+                className="block text-base font-light tracking-wider text-white/80 hover:text-white transition-colors duration-200 py-2"
+              >
+                PROJEKTE
+              </a>
+              <a
+                href="#services"
+                onClick={(e) => scrollToCenter(e, "services")}
+                className="block text-base font-light tracking-wider text-white/80 hover:text-white transition-colors duration-200 py-2"
+              >
+                LEISTUNGEN
+              </a>
+              <a
+                href="#about"
+                onClick={(e) => scrollToCenter(e, "about")}
+                className="block text-base font-light tracking-wider text-white/80 hover:text-white transition-colors duration-200 py-2"
+              >
+                ÜBER UNS
+              </a>
+              <a
+                href="#contact"
+                onClick={(e) => scrollToCenter(e, "contact")}
+                className="block text-base font-light tracking-wider text-[var(--color-planarch-blue)] hover:text-white transition-colors duration-200 py-2"
+              >
+                KONTAKT
+              </a>
+            </div>
           </div>
         </nav>
 
         {/* Hero Section */}
-        <section className="min-h-screen flex items-center justify-center px-6">
+        <section className="min-h-screen flex items-center justify-center px-4 md:px-6">
           <div className="max-w-4xl text-center">
-            <h2 className="text-6xl md:text-8xl font-extralight tracking-wider mb-8">
+            <h2 className="text-5xl sm:text-6xl md:text-8xl font-extralight tracking-wider mb-6 md:mb-8">
               PLANARCH
             </h2>
-            <div className="h-px w-64 bg-[var(--color-planarch-blue)] mx-auto mb-6" />
+            <div className="h-px w-48 md:w-64 bg-[var(--color-planarch-blue)] mx-auto mb-4 md:mb-6" />
             <a
               href="#projects"
               onClick={(e) => scrollToCenter(e, "projects")}
-              className="inline-block text-white/60 hover:text-[var(--color-planarch-blue)] hover:scale-105 transition-all duration-300 font-light tracking-[0.15em] text-sm"
+              className="inline-block text-white/60 hover:text-[var(--color-planarch-blue)] hover:scale-105 transition-all duration-300 font-light tracking-[0.15em] text-xs md:text-sm"
             >
               PROJEKTE ENTDECKEN
             </a>
@@ -188,17 +242,17 @@ export default function Home() {
         {/* Projects Section */}
         <section
           id="projects"
-          className={`py-32 px-6 bg-black/60 backdrop-blur-sm transition-all duration-1000 ${
+          className={`py-16 md:py-32 px-4 md:px-6 bg-black/60 backdrop-blur-sm transition-all duration-1000 ${
             projectsVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-20"
           }`}
         >
           <div className="max-w-7xl mx-auto">
-            <h3 className="text-4xl font-light tracking-wider mb-16 text-center">
+            <h3 className="text-3xl md:text-4xl font-light tracking-wider mb-10 md:mb-16 text-center">
               AUSGEWÄHLTE PROJEKTE
             </h3>
-            <div className="grid md:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
               {projects.map((project, index) => (
                 <div
                   key={project.id}
@@ -220,7 +274,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-300" />
                     <div className="absolute inset-0 border border-white/0 group-hover:border-[var(--color-planarch-blue)] transition-colors duration-300" />
                   </div>
-                  <h4 className="mt-4 text-lg font-light tracking-wide text-gray-300 group-hover:text-[var(--color-planarch-blue)] transition-colors">
+                  <h4 className="mt-3 md:mt-4 text-base md:text-lg font-light tracking-wide text-gray-300 group-hover:text-[var(--color-planarch-blue)] transition-colors">
                     {project.title}
                   </h4>
                 </div>
@@ -232,23 +286,23 @@ export default function Home() {
         {/* About Section */}
         <section
           id="about"
-          className={`py-32 px-6 transition-all duration-1000 ${
+          className={`py-16 md:py-32 px-4 md:px-6 transition-all duration-1000 ${
             aboutVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-20"
           }`}
         >
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h3 className="text-4xl font-light tracking-wider mb-8">
+          <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
+            <h3 className="text-3xl md:text-4xl font-light tracking-wider mb-6 md:mb-8">
               ÜBER UNS
             </h3>
-            <div className="h-px w-32 bg-[var(--color-planarch-blue)] mx-auto mb-12" />
-            <p className="text-lg font-light text-gray-300 leading-relaxed">
+            <div className="h-px w-24 md:w-32 bg-[var(--color-planarch-blue)] mx-auto mb-8 md:mb-12" />
+            <p className="text-base md:text-lg font-light text-gray-300 leading-relaxed">
               Planarch steht für exzellente Architektur, die Funktionalität mit
               zeitlosem Design verbindet. Wir schaffen Räume, die inspirieren
               und nachhaltig beeindrucken.
             </p>
-            <p className="text-lg font-light text-gray-300 leading-relaxed">
+            <p className="text-base md:text-lg font-light text-gray-300 leading-relaxed">
               Mit einem Fokus auf innovative Lösungen und höchste
               Qualitätsstandards realisieren wir Projekte, die Architektur auf
               ein neues Level heben.
@@ -259,18 +313,18 @@ export default function Home() {
         {/* Services Section */}
         <section
           id="services"
-          className={`py-32 px-6 bg-black/60 backdrop-blur-sm transition-all duration-1000 ${
+          className={`py-16 md:py-32 px-4 md:px-6 bg-black/60 backdrop-blur-sm transition-all duration-1000 ${
             servicesVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-20"
           }`}
         >
-          <div className="max-w-4xl mx-auto text-center space-y-8">
-            <h3 className="text-4xl font-light tracking-wider mb-8">
+          <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8">
+            <h3 className="text-3xl md:text-4xl font-light tracking-wider mb-6 md:mb-8">
               LEISTUNGEN
             </h3>
-            <div className="h-px w-32 bg-[var(--color-planarch-blue)] mx-auto mb-12" />
-            <div className="grid md:grid-cols-2 gap-y-6 gap-x-16 max-w-2xl mx-auto">
+            <div className="h-px w-24 md:w-32 bg-[var(--color-planarch-blue)] mx-auto mb-8 md:mb-12" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 md:gap-y-6 gap-x-16 max-w-2xl mx-auto">
               {[
                 "Ausführungsplanung",
                 "Örtliche Bauaufsicht",
@@ -281,14 +335,14 @@ export default function Home() {
               ].map((service, index) => (
                 <div
                   key={service}
-                  className={`text-lg font-light text-white transition-all duration-[800ms] ease-out text-center ${
+                  className={`text-base md:text-lg font-light text-white transition-all duration-[800ms] ease-out text-center ${
                     servicesVisible
                       ? "opacity-100 translate-y-0"
                       : "opacity-0 translate-y-16"
                   }`}
                   style={{ transitionDelay: `${index * 150}ms` }}
                 >
-                  <span className="text-[var(--color-planarch-blue)] mr-3">—</span>
+                  <span className="text-[var(--color-planarch-blue)] mr-2 md:mr-3">—</span>
                   {service}
                 </div>
               ))}
@@ -299,25 +353,25 @@ export default function Home() {
         {/* Contact Section */}
         <section
           id="contact"
-          className={`py-32 px-6 border-t border-white/10 transition-all duration-1000 ${
+          className={`py-16 md:py-32 px-4 md:px-6 border-t border-white/10 transition-all duration-1000 ${
             contactVisible
               ? "opacity-100 translate-y-0"
               : "opacity-0 translate-y-20"
           }`}
         >
-          <div className="max-w-4xl mx-auto text-center space-y-8 mt-8">
-            <h3 className="text-4xl font-light tracking-wider mb-8">KONTAKT</h3>
-            <div className="h-px w-32 bg-[var(--color-planarch-blue)] mx-auto mb-12" />
-            <div className="space-y-4 text-gray-300 font-light">
-              <p className="text-lg">Karl-Kapferer-Strasse 5</p>
-              <p className="text-lg">6020 Innsbruck</p>
-              <p className="text-lg mt-6">
+          <div className="max-w-4xl mx-auto text-center space-y-6 md:space-y-8 mt-4 md:mt-8">
+            <h3 className="text-3xl md:text-4xl font-light tracking-wider mb-6 md:mb-8">KONTAKT</h3>
+            <div className="h-px w-24 md:w-32 bg-[var(--color-planarch-blue)] mx-auto mb-8 md:mb-12" />
+            <div className="space-y-3 md:space-y-4 text-gray-300 font-light">
+              <p className="text-base md:text-lg">Karl-Kapferer-Strasse 5</p>
+              <p className="text-base md:text-lg">6020 Innsbruck</p>
+              <p className="text-base md:text-lg mt-4 md:mt-6">
                 <a href="tel:+436605096336" className="hover:text-white transition-colors">
                   +43 660 5096336
                 </a>
               </p>
-              <p className="text-lg">
-                <a href="mailto:Stephan.neumair@planarch.at" className="hover:text-white transition-colors">
+              <p className="text-base md:text-lg">
+                <a href="mailto:Stephan.neumair@planarch.at" className="hover:text-white transition-colors break-all">
                   Stephan.neumair@planarch.at
                 </a>
               </p>
@@ -326,8 +380,8 @@ export default function Home() {
         </section>
 
         {/* Footer */}
-        <footer className="py-8 px-6 border-t border-white/10">
-          <div className="max-w-7xl mx-auto text-center text-gray-500 text-sm font-light">
+        <footer className="py-6 md:py-8 px-4 md:px-6 border-t border-white/10">
+          <div className="max-w-7xl mx-auto text-center text-gray-500 text-xs md:text-sm font-light">
             <p>© 2025 Planarch. Alle Rechte vorbehalten.</p>
           </div>
         </footer>
