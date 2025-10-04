@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+@theme {
+  --color-planarch-blue: rgb(67, 116, 146);
+  --color-planarch-blue-dark: rgb(47, 96, 126);
+  --color-planarch-blue-light: rgb(87, 136, 166);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: black;
+  color: white;
+}
+
